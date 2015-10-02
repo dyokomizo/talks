@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>&Aacute;lgebra de Tipos</title>
+
+		<meta name="author" content="Daniel Yokomizo">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" type="text/css" href="lib/css/sh_style.min.css" />
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body onload="sh_highlightDocument();">
+
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>&Aacute;lgebra de Tipos</h1>
+					<p>
+						<small><a href="http://daniel.yokomizo.org">Daniel Yokomizo</a> / <a href="http://twitter.com/hakimel">@dyokomizo</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra</h2>
+					<pre class="sourceCode literate haskell"><code>
+a = (b &times; c) &plus; d
+					</code></pre>
+					<ul>
+						<li class="fragment">S&iacute;mbolos: a, b, c, d</li>
+						<li class="fragment">Opera&ccedil;&otilde;es: &times;, &plus;</li>
+						<li class="fragment">Propriedades: comutatividade, associatividade</li>
+						<li class="fragment">Estruturas: Mon&oacute;ides, Grupos, An&eacute;is</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Tipos</h2>
+					<pre class="sourceCode literate haskell"><code>
+data Either a b = Left  a
+                | Right b
+
+data Pair a b   = Pair (a, b)
+					</code></pre>
+					<ul>
+						<li class="fragment">Vari&aacute;veis: a, b</li>
+						<li class="fragment">Construtores: Left, Right, Pair</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos</h2>
+					<p>Faz sentido? <span class="fragment">Sim.</span></p>
+					<p class="fragment">Como?</p>
+					<ul>
+						<li class="fragment">Defini&ccedil;&atilde;o de &aacute;lgebra: estudo de estruturas alg&eacute;bricas</li>
+						<li class="fragment">Estruturas alg&eacute;bricas: conjunto com uma ou mais opera&ccedil;&otilde;es e propriedades</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos</h2>
+					<ul>
+						<li>Conjunto: <span class="fragment">tipos possíveis</span></li>
+						<li>Operações: <span class="fragment">&plus;, &times;</span></li>
+						<li>Propriedades: <span class="fragment">??</span></li>
+						<li>Estruturas: <span class="fragment">??</span></li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Primitivos</h2>
+					<ul>
+						<li>1<span class="fragment">: tipo com um único habitante</span>
+							<div class="fragment"><pre class="sourceCode literate haskell"><code>data () = () -- aka Unit</code></pre></div>
+						</li>
+						<li>0<span class="fragment">: tipo com nenhum habitante</span>
+							<div class="fragment"><pre class="sourceCode literate haskell"><code>data Void -- requer EmptyDataDecls</code></pre></div>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Opera&ccedil;&otilde;es</h2>
+					<ul>
+						<li>&plus;<span class="fragment">: Uni&atilde;o</span>
+							<div class="fragment"><pre class="sourceCode literate haskell"><code>|</code></pre></div>
+						</li>
+						<li>&times;<span class="fragment">: Tupla</span>
+							<div class="fragment"><pre class="sourceCode literate haskell"><code>(,)</code></pre></div>
+						</li>
+						<li>^<span class="fragment">: Fun&ccedil;&atilde;o</span>
+							<div class="fragment"><pre class="sourceCode literate haskell"><code>&#x2192;</code></pre></div>
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Opera&ccedil;&otilde;es</h2>
+					<h4>&plus;</h4>
+					<pre class="sourceCode literate haskell"><code>
+data Either a b = Left  a
+                | Right b
+					</code></pre>
+					<pre class="sourceCode literate haskell"><code>
+c = a &plus; b
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Opera&ccedil;&otilde;es</h2>
+					<h4>&times;</h4>
+					<pre class="sourceCode literate haskell"><code>
+data Pair a b   = Pair (a, b)
+					</code></pre>
+					<pre class="sourceCode literate haskell"><code>
+c = a &times; b
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Opera&ccedil;&otilde;es</h2>
+					<h4>^</h4>
+					<pre class="sourceCode literate haskell"><code>
+data Fun a b   = Fun (a &#x2192; b)
+					</code></pre>
+					<pre class="sourceCode literate haskell"><code>
+c = b<sup>a</sup>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Exemplos</h2>
+					<pre class="sourceCode literate haskell"><code>
+data Maybe a = Just a
+             | Nothing <span class="fragment">-- () impĺ&iacute;cito</span>
+					</code></pre>
+					<div class="fragment">
+						<pre class="sourceCode literate haskell"><code>
+c = a &plus; 1
+						</code></pre>
+					</div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Exemplos</h2>
+					<pre class="sourceCode literate haskell"><code>
+data Bool = True
+          | False
+					</code></pre>
+					<div class="fragment">
+						<pre class="sourceCode literate haskell"><code>
+a = 1 &plus; 1
+						</code></pre>
+					</div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Propriedades</h2>
+					<h4 class="fragment">Elemento neutro</h4>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+a &#x2245; (a &times; 1) &#x2245; (1 &times; a)
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+String &#x2245; (String, ()) &#x2245; ((), String)
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+a &#x2245; (a &plus; 0) &#x2245; (0 &plus; a)
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+String &#x2245; (Either String Void) &#x2245; (Either Void String)
+					</code></pre></div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Propriedades</h2>
+					<h4 class="fragment">Associatividade</h4>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+a &times; (b &times; c) &#x2245; (a &times; b) &times; c
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+(String,(Int,Bool)) &#x2245; ((String,Int),Bool)
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+a &plus; (b &plus; c) &#x2245; (a &plus; b) &plus; c
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+Either String (Either Int Bool) &#x2245; Either (Either String Int) Bool
+					</code></pre></div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Propriedades</h2>
+					<h4>Elemento neutro</h4>
+					<pre class="sourceCode literate haskell"><code>
+a &#x2245; (a &times; 1) &#x2245; (1 &times; a)
+					</code></pre>
+					<pre class="sourceCode literate haskell"><code>
+a &#x2245; (a &plus; 0) &#x2245; (0 &plus; a)
+					</code></pre>
+					<h4>Associatividade</h4>
+					<pre class="sourceCode literate haskell"><code>
+a &times; (b &times; c) &#x2245; (a &times; b) &times; c
+					</code></pre>
+					<pre class="sourceCode literate haskell"><code>
+a &plus; (b &plus; c) &#x2245; (a &plus; b) &plus; c
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Estruturas</h2>
+					<h4 class="fragment">Mon&oacute;ide</h4>
+					<ul>
+						<li class="fragment">Defini&ccedil;&atilde;o: conjunto com uma opera&ccedil;&atilde;o associativa e com elemento neutro</li>
+						<li class="fragment">&times; com 1</li>
+						<li class="fragment">&plus; com 0</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Propriedades</h2>
+					<h4 class="fragment">Distributividade</h4>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+a &times; (b &plus; c) &#x2245; (a &times; b) &plus; (a &times; c)
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+(String, Either Int Bool) &#x2245; Either (String, Int) (String, Bool)
+					</code></pre></div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Exemplos</h2>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+data A a b = A1 a b
+           | A2 b
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+type A a b = Either (a, b) b
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+c = (a &times; b) &plus; b
+<span class="fragment">  &#x2245; (a &times; b) &plus; (1 &times; b) -- Elemento neutro</span>
+<span class="fragment">  &#x2245; (a &plus; 1) &times; b       -- Distributividade</span>
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+type A a b = (Maybe a, b)
+					</code></pre></div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Fun&ccedil;&otilde;es</h2>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+a &#x2192; b   &#x224D;   b<sup>a</sup>
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+Bool &#x2192; Int   &#x224D;   Int<sup>Bool</sup>
+					</code></pre></div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Fun&ccedil;&otilde;es</h2>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+Bool &#x2192; a   &#x224D;   a<sup>Bool</sup>
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+Bool   &#x224D;   1 &plus; 1
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+a<sup>Bool</sup>   &#x2245; a&zwnj;<sup>1 &plus; 1</sup>
+<span class="fragment">        &#x2245; a&zwnj;<sup>1</sup> &times; a&zwnj;<sup>1</sup></span>
+<span class="fragment">        &#x2245; a &times; a</span>
+					</code></pre></div>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+Bool &#x2192; a   &#x2245;   (a,a)
+					</code></pre></div>
+				</section>
+
+				<section>
+					<h2>&Aacute;lgebra de Tipos &mdash; Fun&ccedil;&otilde;es</h2>
+					<div class="fragment"><pre class="sourceCode literate haskell"><code>
+meaningOfLife :: Boolean -> Int
+meaningOfLife True  = 42
+meaningOfLife False = 37
+
+<span class="fragment">Bool -> a &#x2245; (a, a)</span>
+
+<span class="fragment">meaningOfLife' :: (Int, Int)
+meaningOfLife = (42,37)</span>
+					</code></pre></div>
+				</section>
+
+				<section>
+					<h2>Refer&ecirc;ncias</h2>
+					<ul>
+						<li><a href="http://blog.lab49.com/archives/3011">The Algebra of Data, and the Calculus of Mutation</a></li>
+						<li><a href="http://stackoverflow.com/questions/9190352/abusing-the-algebra-of-algebraic-data-types-why-does-this-work">Abusing the algebra of algebraic data types &mdash; why does this work?</a></li>
+						<li><a href="http://strictlypositive.org/diff.pdf">The Derivative of a Regular Type is its Type of One-Hole Contexts</a></li>
+						<li><a href="http://blog.lab49.com/archives/3027">Differentiating Types in Haskell</a></li>
+						<li><a href="http://web.archive.org/web/20100630195449/http://homepage.mac.com/sigfpe/Computing/diff.html">Differentiating Datastructures &mdash; The Algebra of Datatypes (for Non-Functional Programmers)</a></li>
+						<li><a href="http://en.wikibooks.org/wiki/Haskell/Zippers">Theseus and the Zipper</a></li>
+						<li><a href="http://www.youtube.com/watch?v=YScIPA8RbVE">The Algebra of Algebraic Data Types</a></li>
+						<li><a href="https://github.com/dyokomizo/type-algebra-slides">github.com/dyokomizo/type-algebra-slides</a></li>
+					</ul>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script type="text/javascript" src="lib/js/sh_main.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_haskell.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_init.min.js" > </script>
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
