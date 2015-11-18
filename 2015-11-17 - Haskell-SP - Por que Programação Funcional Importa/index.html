@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Por que Programa&ccedil;&atilde;o Funcional Importa</title>
+
+		<meta name="author" content="Daniel Yokomizo">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" type="text/css" href="lib/css/sh_style.min.css" />
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body onload="sh_highlightDocument();">
+
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Por que Programa&ccedil;&atilde;o Funcional Importa</h1>
+					<p>
+						<small><a href="http://daniel.yokomizo.org">Daniel Yokomizo</a> / <a href="http://twitter.com/dyokomizo">@dyokomizo</a></small>
+					</p>
+					<p>
+						<small><a href="http://dyokomizo.github.io/talks/">http://dyokomizo.github.io/talks</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>O que &eacute; Programa&ccedil;&atilde;o Funcional</h2>
+					<h4 class="fragment">C&aacute;lculo &#x03BB;</h4>
+					<pre class="fragment"><code>
+					e = &#x03BB;x.e -- abstra&ccedil;&atilde;o
+					  | e e  -- aplica&ccedil;&atilde;o
+					  | x    -- v&aacute;riaveis
+					</code></pre>
+					<ul class="fragment">
+						<li class="">&#x03B1;-equival&ecirc;ncia: renomear vari&aacute;veis ligadas</li>
+						<li class="">&#x03B2;-redu&ccedil;&atilde;o:  substituir vari&aacute;veis ligadas por express&otilde;es em aplica&ccedil;&otilde;es</li>
+						<li class="">&#x03B7;-convers&atilde;o: no&ccedil;&atilde;o de extensionalidade</li>
+						<li class="fragment">Independente da escolha de avalia&ccedil;&atilde;o</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Estruturas de Dados Alg&eacute;bricas</h2>
+					<pre class="fragment"><code>
+					data List a = Empty
+					            | Cons a (List a)
+					</code></pre>
+					<pre class="fragment"><code>
+					xs_0 = Empty
+					xs_1 = Cons 1 Empty
+					xs_2 = Cons 1 (Cons 2 Empty)
+					</code></pre>
+					<pre class="fragment"><code>
+					xs_0 = []
+					xs_1 = [1]
+					xs_2 = [1,2]
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Estruturas de Dados Alg&eacute;bricas</h2>
+					<pre class="fragment"><code>
+					sum [1,2,3] = 6
+					</code></pre>
+					<pre class="fragment"><code>
+					sum Empty = 0
+					</code></pre>
+					<pre class="fragment"><code>
+					sum (Cons x xs) = x + sum xs
+					</code></pre>
+					<pre class="fragment"><code>
+					<span                 >sum (Cons 1 (Cons 2 (Cons 3 Empty)))</span>
+					<span class="fragment">  = 1 + sum (Cons 2 (Cons 3 Empty))</span>
+					<span class="fragment">        sum (Cons 2 (Cons 3 Empty))</span>
+					<span class="fragment">          = 2 + sum (Cons 3 Empty)</span>
+					<span class="fragment">                sum (Cons 3 Empty)</span>
+					<span class="fragment">                  = 3 + sum Empty</span>
+					<span class="fragment">                        sum Empty	</span>
+					<span class="fragment">                          = 0</span>
+					<span class="fragment">                  = 3 + 0</span>
+					<span class="fragment">          = 2 + 3 + 0</span>
+					<span class="fragment">  = 1 + 2 + 3 + 0</span>
+					<span class="fragment">  = (+) 1 ((+) 2 ((+) 3 0))</span>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Estruturas de Dados Alg&eacute;bricas</h2>
+					<pre class="fragment"><code>
+					<u>sum</u> Empty = <u>0</u>
+					<u>sum</u> (Cons x xs) = x <u>+</u> <u>sum</u> xs
+					</code></pre>
+					<pre class="fragment"><code>
+					<u>sum</u> xs = <u>foldr (+) 0</u> xs
+					<u>foldr c e</u> Empty = e
+					<u>foldr c e</u> (Cons x xs) = c x (<u>foldr c e</u> xs)
+					</code></pre>
+					<pre class="fragment"><code>
+					foldr c <u>e</u> <u>Empty</u> = <u>e</u>
+					foldr <u>c</u> e <u>(Cons x xs)</u> = <u>c</u> x (<u>foldr c e</u> xs)
+					</code></pre>
+					<pre class="fragment"><code>
+					<u>foldr c e</u> xs = <u>loop</u> xs
+					  where <u>loop</u> Empty = e
+					        <u>loop</u> (Cons x xs) = c x (<u>loop</u> xs)
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Estruturas de Dados Alg&eacute;bricas</h2>
+					<pre class="fragment"><code>
+					sum = foldr (+) 0
+					product = foldr (*) 1
+					any = foldr (||) False
+					all = foldr (&amp;&amp;) True
+					</code></pre>
+					<pre class="fragment"><code>
+					foldr (+) 0 (Cons 1 (Cons 2 (Cons 3 Empty)))
+					          = (+)   1 ((+)  2 ((+)  3 0))
+					foldr (*) 1 (Cons 1 (Cons 2 (Cons 3 Empty)))
+					          = (*)   1 ((*)  2 ((*)  3 1))
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Estruturas de Dados Alg&eacute;bricas</h2>
+					<pre class="fragment"><code>
+					as = Cons 1 (Cons 2 Empty)
+					bs = Cons 3 (Cons 4 Empty)
+					abs = Cons 1 (Cons 2 (Cons 3 (Cons 4 Empty)))
+					</code></pre>
+					<pre class="fragment"><code>
+					foldr c e (Cons 1 (Cons 2 Empty))
+					        =  c    1 (c    2 e))
+					</code></pre>
+					<pre class="fragment"><code>
+					foldr Cons (Cons 3 (Cons 4 Empty)) (Cons 1 (Cons 2 Empty))
+					        =  Cons 1 (Cons 2 (Cons 3 (Cons 4 Empty)))
+					</code></pre>
+					<pre class="fragment"><code>
+					append as bs = foldr Cons bs as
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Avalia&ccedil;&atilde;o n&atilde;o Ansiosa (inclui Pregui&ccedil;osa)</h2>
+					<pre class="fragment"><code>
+					head (Cons x _)     = x
+
+					last (Cons x Empty) = x
+					last (Cons x xs)    = last xs
+
+					take 0 _            = Empty
+					take _ Empty        = Empty
+					take n (Cons x xs)  = Cons x (take (n-1) xs) 
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Avalia&ccedil;&atilde;o n&atilde;o Ansiosa (inclui Pregui&ccedil;osa)</h2>
+					<pre class="fragment"><code>
+					fibs = Cons 0 (Cons 1 (more fibs))
+					  where more (Cons x xs) = Cons (x + head xs) (more xs)
+					</code></pre>
+					<pre class="fragment"><code>
+					<span                 >  fibs = Cons 0 (Cons 1 ?<sub>0</sub>)</span>
+					<span class="fragment">  last (take 4 <u>fibs</u>)</span>
+					<span class="fragment">= last (take 4 (Cons 0     (Cons 1     ?<sub>0</sub>)))</span>
+					<span class="fragment">= last (Cons 0 (take <u>(4-1)</u> (Cons 1     ?<sub>0</sub>)))</span>
+					<span class="fragment">= last (Cons 0 (take 3     (Cons 1     ?<sub>0</sub>)))</span>
+					<span class="fragment">= last (Cons 0 (Cons 1     (take (3-1) ?<sub>0</sub>)))</span>
+					<span class="fragment">= last (Cons 1 (take <u>(3-1)</u> ?<sub>0</sub>))</span>
+					<span class="fragment">= last (Cons 1 (take 2     <u>?<sub>0</sub></u>))</span>
+					<span class="fragment">= last (Cons 1 (take 2     (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (more (Cons 1 ?<sub>0</sub>)))))</span>
+					<span class="fragment">fibs = Cons 0 (Cons 1 (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (more (Cons 1 ?<sub>0</sub>))))</span>
+					<span class="fragment">= last (Cons 1 (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (take (2-1) (more (Cons 1 ?<sub>0</sub>)))))</span>
+					<span class="fragment">= last (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (take <u>(2-1)</u> (more (Cons 1 ?<sub>0</sub>))))</span>
+					<span class="fragment">= last (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (take 1     <u>(more (Cons 1 ?<sub>0</sub>))</u>))</span>
+					<span class="fragment">= last (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (take 1     (Cons (1 + head ?<sub>0</sub>) (more ?<sub>0</sub>))))</span>
+					<span class="fragment">= last (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (Cons (1 + head ?<sub>0</sub>) (take (1-1) (more ?<sub>0</sub>))))</span>
+					<span class="fragment">= last (Cons (1 + head ?<sub>0</sub>) (take <u>(1-1)</u> (more ?<sub>0</sub>)))</span>
+					<span class="fragment">= last (Cons (1 + head ?<sub>0</sub>) (take 0 (more ?<sub>0</sub>)))</span>
+					<span class="fragment">= last (Cons (1 + head ?<sub>0</sub>) Empty)</span>
+					<span class="fragment">= 1 + head <u>?<sub>0</sub></u></span>
+					<span class="fragment">= 1 + head (Cons (0 + head (Cons 1 ?<sub>0</sub>)) (more (Cons 1 ?<sub>0</sub>)))</span>
+					<span class="fragment">= 1 + (0 + head (Cons 1 ?<sub>0</sub>))</span>
+					<span class="fragment">= 1 + (0 + 1)</span>
+					<span class="fragment">= 1 + 1</span>
+					<span class="fragment">fibs = Cons 0 (Cons 1 (Cons 1 ?<sub>1</sub>))</span>
+					<span class="fragment">= 2</span>
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Avalia&ccedil;&atilde;o n&atilde;o Ansiosa (inclui Pregui&ccedil;osa)</h2>
+					<pre class="fragment"><code>
+					length Empty       = 0
+					length (Cons _ xs) = 1 + length xs
+					</code></pre>
+					<pre class="fragment"><code>
+					prop xs = length xs &gt; 5
+					prop fibs = &#x22A5; -- recurs&atilde;o infinita :(
+					</code></pre>
+					<pre class="fragment"><code>
+					prop' (Cons _ (Cons _ (Cons _ (Cons _ (Cons _ (Cons _ _)))))) = True
+					prop' _                                              = False
+					prop' fibs = True -- mas temos que reescrever o c&oacute;digo :/
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Avalia&ccedil;&atilde;o n&atilde;o Ansiosa (inclui Pregui&ccedil;osa)</h2>
+					<pre class="fragment"><code>
+					data N = Z   -- A natural N is either zero (Z)
+					       | S N -- or the sucessor of a natural (S N)
+					</code></pre>
+					<pre class="fragment"><code>
+					instance Ord N where
+					    Z     &lt;= _     = True
+					    _     &lt;= Z     = False
+					    (S x) &lt;= (S y) = x &lt;= y
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Avalia&ccedil;&atilde;o n&atilde;o Ansiosa (inclui Pregui&ccedil;osa)</h2>
+					<pre class="fragment"><code>
+					prop'' xs = genericLength xs > (5 :: N)
+					prop'' fibs = True -- =D
+					</code></pre>
+					<pre class="fragment"><code>
+					prop''' xs = case (genericLength xs :: N) of
+					    (S (S (S (S (S (S _)))))) = True
+					    _                     = False
+					</code></pre>
+					<pre class="fragment"><code>
+					prop' (Cons _ (Cons _ (Cons _ (Cons _ (Cons _ (Cons _ _)))))) = True
+					prop' _                                              = False
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Refer&ecirc;ncias</h2>
+					<ul>
+						<li><a href="http://www.cse.chalmers.se/~rjmh/Papers/whyfp.html">Why Functional Programming Matters</a></li>
+						<li><a href="http://daniel.yokomizo.org/2012/02/using-laziness-to-improve-performance.html">Using laziness to improve the performance of Haskell programs</a></li>
+					</ul>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script type="text/javascript" src="lib/js/sh_main.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_haskell.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_init.min.js" > </script>
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: false,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
