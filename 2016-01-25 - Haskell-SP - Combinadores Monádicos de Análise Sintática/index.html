@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Combinadores Mon&aacute;dicos de An&aacute;lise Sint&aacute;tica</title>
+
+		<meta name="author" content="Daniel Yokomizo">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" type="text/css" href="lib/css/sh_style.min.css" />
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+		<style>
+.reveal .slides {
+  height: 100%;
+  top: 10%;
+  margin-top: 0%;
+}
+
+.reveal .slides>section {
+  min-height: 90%;
+  top: auto;
+}
+
+.reveal .slides>section>section {
+  min-height: 100%;
+}		</style>
+	</head>
+
+	<body onload="sh_highlightDocument();">
+
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Combinadores Mon&aacute;dicos de An&aacute;lise Sint&aacute;tica</h1>
+					<p>
+						<small><a href="http://daniel.yokomizo.org">Daniel Yokomizo</a> / <a href="http://twitter.com/dyokomizo">@dyokomizo</a></small>
+					</p>
+					<p>
+						<small><a href="http://dyokomizo.github.io/talks/">http://dyokomizo.github.io/talks</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>An&aacute;lise Sint&aacute;tica</h2>
+					<h4>Id&eacute;ia inicial</h4>
+					<pre><code>					parse :: String -> Int
+
+					parse "42" == 42</code></pre>
+				</section>
+
+				<section>
+					<h2>An&aacute;lise Sint&aacute;tica</h2>
+					<h4>M&uacute;ltiplas interpreta&ccedil;&otilde;es</h4>
+					<pre><code>					type Parser = ...
+					parse :: Parser -> String -> Int
+
+					dec, hex :: Parser
+
+					parse dec "42" == 42
+					parse hex "2A" == 42</code></pre>
+				</section>
+
+				<section>
+					<h2>An&aacute;lise Sint&aacute;tica</h2>
+					<h4>Falhas</h4>
+					<pre><code>					type Parser = ...
+					parse :: Parser -> String -> Maybe Int
+
+					dec, hex :: Parser
+
+					parse dec "42" == Just 42
+					parse dec "2A" == Nothing</code></pre>
+				</section>
+
+				<section>
+					<h2>An&aacute;lise Sint&aacute;tica</h2>
+					<h4>Parametrizando o resultado</h4>
+					<pre><code>					type Parser a = ...
+					parse :: Parser a -> String -> Maybe a
+
+					dec :: Parser Int
+					chr :: Parser Char
+
+					parse dec "7" == Just 7
+					parse chr "7" == Just '7'</code></pre>
+				</section>
+
+				<section>
+					<h2>An&aacute;lise Sint&aacute;tica</h2>
+					<h4>Parcialidade</h4>
+					<pre><code>					type Parser a = ...
+					parse :: Parser a -> String -> Maybe (a, String)
+
+					dec, hex :: Parser Int
+
+					parse hex "42" == Just (42, "")
+					parse dec "2A" == Just (2, "A")</code></pre>
+				</section>
+
+				<section>
+					<h2>An&aacute;lise Sint&aacute;tica</h2>
+					<h4>Combinadores</h4>
+					<pre><code>					type Parser a = ...
+					parse :: Parser a -> String -> Maybe (a, String)
+					pair :: Parser a -> Parser b -> Parser (a, b)
+
+					dec :: Parser Int
+					chr :: Parser Char
+
+					parse (pair dec chr) "2A" == Maybe ((2, 'A'), "")
+					parse (pair chr dec) "2A" == Nothing
+					parse (pair dec chr) "42" == ???</code></pre>
+				</section>
+
+				<section>
+					<section>
+						<h2>An&aacute;lise Sint&aacute;tica</h2>
+						<h4>Ambiguidade</h4>
+						<pre><code>						type Parser a = ...
+						parse :: Parser a -> String -> [(a, String)]
+						pair :: Parser a -> Parser b -> Parser (a, b)
+
+						dec, hex :: Parser Int
+						chr :: Parser Char
+
+						parse dec "42" == [(4,"2"), (42,"")]
+						parse dec "2A" == [(2,"A")]
+
+						parse hex "42" == [(4,"2"), (66,"")]
+						parse hex "2A" == [(2,"A"), (42,"")]
+
+						parse (pair dec chr) "2A" == [((2, 'A'), "")]
+						parse (pair dec chr) "42" == [((4, '2'), "")]</code></pre>
+					</section>
+					<section>
+						<h2>An&aacute;lise Sint&aacute;tica</h2>
+						<h4>Ambiguidade</h4>
+						<pre><code>
+						[a] &#x2245; Maybe (a, [a])
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<h2>Sem&acirc;ntica Denotacional</h2>
+					<h4>Analisadores Sint&aacute;ticos como Fun&ccedil;&otilde;es</h4>
+					<pre><code>  type Parser a = String -> [(a, String)]
+  parse :: Parser a -> String -> [(a, String)]
+  parse p = p</code></pre>	
+				</section>
+
+				<section>
+					<h2>Sem&acirc;ntica Denotacional</h2>
+					<h4>Como lembrar disso tudo?</h4>
+					<img alt="A Parser for Things / is a function from Strings / to Lists of Pairs / of Things and Strings!" src="img/Seuss.jpg">
+					<a href="http://www.willamette.edu/~fruehr/haskell/seuss.html">&copy;Fritz Ruehr, Willamette University</a>
+				</section>
+
+				<section>
+					<section>
+						<h2>Sem&acirc;ntica Denotacional</h2>
+						<h4>Combinadores</h4>
+						<pre><code>pair p1 p2 s = concatMap p2' (p1 s)
+  where p2' (a, s') = concatMap (\(b, s'') -> [(<u>(a, b)</u>, s'')]) (p2 s')</code></pre>
+						<pre class="fragment"><code>pair p1 p2 s = bind p1 (\a -> bind p2 (\b -> unit (a, b)))
+
+bind p f = \s -> concatMap (\(a, s') -> f a s') (p s)
+unit x   = \s -> [(x, s)]</code></pre>
+					</section>
+					<section>
+						<h2>Sem&acirc;ntica Denotacional</h2>
+						<h4>Sintaticamente mais agrad&aacute;vel</h4>
+						<pre><code>pair p1 p2 s = bind p1 (\a -> bind p2 (\b -> unit (a, b)))</code></pre>
+						<pre><code>pair p1 p2 s = p1 `bind` \a ->
+               p2 `bind` \b ->
+               unit (a, b)</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<h2>M&ocirc;nadas</h2>
+					<h4>Uma estrutura alg&eacute;brica para analisadores sint&aacute;ticos</h4>
+					<pre><code>					class Monad m where
+					    (>>=) :: m a -> (a -> m b) -> m b
+					    return :: a -> m a</code></pre>
+					<pre class="fragment"><code>					instance Monad Parser where
+					    p >>= f  = \s -> concatMap (\(a, s') -> f a s') (p s)
+					    return x = \s -> [(x, s)]</code></pre>
+				</section>
+
+				<section>
+					<h2>M&ocirc;nadas</h2>
+					<h4>Uma estrutura alg&eacute;brica para analisadores sint&aacute;ticos</h4>
+					<pre><code>					class Monad m => MonadPlus m where
+					    mzero :: m a
+					    mplus :: m a -> m a -> m a</code></pre>
+					<pre class="fragment"><code>					instance MonadPlus Parser where
+					    mzero = \s -> []
+					    mplus p1 p2 = \s -> p1 s ++ p2 s</code></pre>
+				</section>
+
+				<section>
+					<h2>Analisadores Sint&aacute;ticos: Exemplos</h2>
+					<pre><code>chr :: Parser Char
+chr []     = []
+chr (c:cs) = [(c, cs)]</code></pre>
+					<pre><code>dec :: Parser Int
+dec = many1 digit
+  where digit = do c &lt;- chr
+                   guard (isDigit c)
+                   return (digitToInt c)
+
+many1 p = do x  &lt;- p
+             xs &lt;- many p
+             return (x:xs)
+
+many p = more `mplus` zero
+  where zero = return []
+        more = do x  &lt;- p
+                  xs &lt;- many p
+                  return (x:xs)</code></pre>
+				</section>
+
+				<section>
+					<h2>Refer&ecirc;ncias</h2>
+					<ul>
+						<li><a href="http://www.cs.nott.ac.uk/~pszgmh/bib.html#parsing">Higher-Order Functions for Parsing</a></li>
+						<li><a href="http://www.cs.nott.ac.uk/~pszgmh/bib.html#monparsing">Monadic Parser Combinators</a></li>
+					</ul>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script type="text/javascript" src="lib/js/sh_main.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_haskell.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_init.min.js" > </script>
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: false,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+//					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
