@@ -50,6 +50,8 @@
 			<div class="slides">
 				<section>
 					<h1>Combinadores Mon&aacute;dicos de An&aacute;lise Sint&aacute;tica</h1>
+					<br>
+					<br>
 					<p>
 						<small><a href="http://daniel.yokomizo.org">Daniel Yokomizo</a> / <a href="http://twitter.com/dyokomizo">@dyokomizo</a></small>
 					</p>
@@ -61,100 +63,98 @@
 				<section>
 					<h2>An&aacute;lise Sint&aacute;tica</h2>
 					<h4>Id&eacute;ia inicial</h4>
-					<pre><code>					parse :: String -> Int
-
-					parse "42" == 42</code></pre>
+					<pre><code>			parse :: String -> Int
+			parse "42" == 42</code></pre>
 				</section>
 
 				<section>
 					<h2>An&aacute;lise Sint&aacute;tica</h2>
 					<h4>M&uacute;ltiplas interpreta&ccedil;&otilde;es</h4>
-					<pre><code>					type Parser = ...
-					parse :: Parser -> String -> Int
+					<pre><code>		type Parser = ...
+		parse :: Parser -> String -> Int
 
-					dec, hex :: Parser
+		dec, hex :: Parser
 
-					parse dec "42" == 42
-					parse hex "2A" == 42</code></pre>
+		parse dec "42" == 42
+		parse hex "2A" == 42</code></pre>
 				</section>
 
 				<section>
 					<h2>An&aacute;lise Sint&aacute;tica</h2>
 					<h4>Falhas</h4>
-					<pre><code>					type Parser = ...
-					parse :: Parser -> String -> Maybe Int
+					<pre><code>		type Parser = ...
+		parse :: Parser -> String -> Maybe Int
 
-					dec, hex :: Parser
+		dec, hex :: Parser
 
-					parse dec "42" == Just 42
-					parse dec "2A" == Nothing</code></pre>
+		parse dec "42" == Just 42
+		parse dec "2A" == Nothing</code></pre>
 				</section>
 
 				<section>
 					<h2>An&aacute;lise Sint&aacute;tica</h2>
 					<h4>Parametrizando o resultado</h4>
-					<pre><code>					type Parser a = ...
-					parse :: Parser a -> String -> Maybe a
+					<pre><code>		type Parser a = ...
+		parse :: Parser a -> String -> Maybe a
 
-					dec :: Parser Int
-					chr :: Parser Char
+		dec :: Parser Int
+		chr :: Parser Char
 
-					parse dec "7" == Just 7
-					parse chr "7" == Just '7'</code></pre>
+		parse dec "7" == Just 7
+		parse chr "7" == Just '7'</code></pre>
 				</section>
 
 				<section>
 					<h2>An&aacute;lise Sint&aacute;tica</h2>
 					<h4>Parcialidade</h4>
-					<pre><code>					type Parser a = ...
-					parse :: Parser a -> String -> Maybe (a, String)
+					<pre><code>	type Parser a = ...
+	parse :: Parser a -> String -> Maybe (a, String)
 
-					dec, hex :: Parser Int
+	dec, hex :: Parser Int
 
-					parse hex "42" == Just (42, "")
-					parse dec "2A" == Just (2, "A")</code></pre>
+	parse hex "42" == Just (42, "")
+	parse dec "2A" == Just (2, "A")</code></pre>
 				</section>
 
 				<section>
 					<h2>An&aacute;lise Sint&aacute;tica</h2>
 					<h4>Combinadores</h4>
-					<pre><code>					type Parser a = ...
-					parse :: Parser a -> String -> Maybe (a, String)
-					pair :: Parser a -> Parser b -> Parser (a, b)
+					<pre><code>	type Parser a = ...
+	parse :: Parser a -> String -> Maybe (a, String)
+	pair :: Parser a -> Parser b -> Parser (a, b)
 
-					dec :: Parser Int
-					chr :: Parser Char
+	dec :: Parser Int
+	chr :: Parser Char
 
-					parse (pair dec chr) "2A" == Maybe ((2, 'A'), "")
-					parse (pair chr dec) "2A" == Nothing
-					parse (pair dec chr) "42" == ???</code></pre>
+	parse (pair dec chr) "2A" == Maybe ((2, 'A'), "")
+	parse (pair chr dec) "2A" == Nothing
+	parse (pair dec chr) "42" == ???</code></pre>
 				</section>
 
 				<section>
 					<section>
 						<h2>An&aacute;lise Sint&aacute;tica</h2>
 						<h4>Ambiguidade</h4>
-						<pre><code>						type Parser a = ...
-						parse :: Parser a -> String -> [(a, String)]
-						pair :: Parser a -> Parser b -> Parser (a, b)
+						<pre><code>	type Parser a = ...
+	parse :: Parser a -> String -> [(a, String)]
+	pair :: Parser a -> Parser b -> Parser (a, b)
 
-						dec, hex :: Parser Int
-						chr :: Parser Char
+	dec, hex :: Parser Int
+	chr :: Parser Char
 
-						parse dec "42" == [(4,"2"), (42,"")]
-						parse dec "2A" == [(2,"A")]
+	parse dec "42" == [(4,"2"), (42,"")]
+	parse dec "2A" == [(2,"A")]
 
-						parse hex "42" == [(4,"2"), (66,"")]
-						parse hex "2A" == [(2,"A"), (42,"")]
+	parse hex "42" == [(4,"2"), (66,"")]
+	parse hex "2A" == [(2,"A"), (42,"")]
 
-						parse (pair dec chr) "2A" == [((2, 'A'), "")]
-						parse (pair dec chr) "42" == [((4, '2'), "")]</code></pre>
+	parse (pair dec chr) "2A" == [((2, 'A'), "")]
+	parse (pair dec chr) "42" == [((4, '2'), "")]</code></pre>
 					</section>
 					<section>
 						<h2>An&aacute;lise Sint&aacute;tica</h2>
 						<h4>Ambiguidade</h4>
-						<pre><code>
-						[a] &#x2245; Maybe (a, [a])
+						<pre><code>			[a] &#x2245; Maybe (a, [a])
 						</code></pre>
 					</section>
 				</section>
@@ -198,23 +198,23 @@ unit x   = \s -> [(x, s)]</code></pre>
 				<section>
 					<h2>M&ocirc;nadas</h2>
 					<h4>Uma estrutura alg&eacute;brica para analisadores sint&aacute;ticos</h4>
-					<pre><code>					class Monad m where
-					    (>>=) :: m a -> (a -> m b) -> m b
-					    return :: a -> m a</code></pre>
-					<pre class="fragment"><code>					instance Monad Parser where
-					    p >>= f  = \s -> concatMap (\(a, s') -> f a s') (p s)
-					    return x = \s -> [(x, s)]</code></pre>
+					<pre><code>	class Monad m where
+	    (>>=) :: m a -> (a -> m b) -> m b
+	    return :: a -> m a</code></pre>
+					<pre class="fragment"><code>	instance Monad Parser where
+	    p >>= f  = \s -> concatMap (\(a, s') -> f a s') (p s)
+	    return x = \s -> [(x, s)]</code></pre>
 				</section>
 
 				<section>
 					<h2>M&ocirc;nadas</h2>
 					<h4>Uma estrutura alg&eacute;brica para analisadores sint&aacute;ticos</h4>
-					<pre><code>					class Monad m => MonadPlus m where
-					    mzero :: m a
-					    mplus :: m a -> m a -> m a</code></pre>
-					<pre class="fragment"><code>					instance MonadPlus Parser where
-					    mzero = \s -> []
-					    mplus p1 p2 = \s -> p1 s ++ p2 s</code></pre>
+					<pre><code>	class Monad m => MonadPlus m where
+	    mzero :: m a
+	    mplus :: m a -> m a -> m a</code></pre>
+					<pre class="fragment"><code>	instance MonadPlus Parser where
+	    mzero = \s -> []
+	    mplus p1 p2 = \s -> p1 s ++ p2 s</code></pre>
 				</section>
 
 				<section>
