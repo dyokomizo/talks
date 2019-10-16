@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Um comparativo de Typeclasses e M&oacute;dulos (em OCaml)</title>
+
+		<meta name="author" content="Daniel Yokomizo">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<link rel="stylesheet" type="text/css" href="lib/css/sh_style.min.css" />
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+		<style>
+.reveal .slides {
+  height: 100%;
+  top: 10%;
+  margin-top: 0%;
+}
+
+.reveal .slides>section {
+  min-height: 90%;
+  top: auto;
+}
+
+.reveal .slides>section>section {
+  min-height: 100%;
+}		</style>
+	</head>
+
+	<body onload="sh_highlightDocument();">
+
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h1>Typeclasses e M&oacute;dulos (em OCaml)</h1>
+					<br>
+					<br>
+					<p>
+						<small><a href="http://daniel.yokomizo.org">Daniel Yokomizo</a> / <a href="http://twitter.com/dyokomizo">@dyokomizo</a></small>
+					</p>
+					<p>
+						<small><a href="http://dyokomizo.github.io/talks/">http://dyokomizo.github.io/talks</a></small>
+					</p>
+				</section>
+
+				<section>
+					<h2>OCaml</h2>
+					<ul>
+						<li>Descendente do ML (atrav&eacute;s do Caml)</li>
+						<li>"H&iacute;brida" ("O" = <em>Objective</em>)</li>
+						<li>Avalia&ccedil;&atilde;o estrita</li>
+						<li>Impura, por&eacute;m incentiva programa&ccedil;&atilde;o pura</li>
+						<li>Compilador e <em>runtime</em> com bom desempenho</li>
+						<li>M&oacute;dulos de primeira classe e ordem superior</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>Assinaturas</h2>
+					<h4>Usadas para definir interfaces de m&oacute;dulos</h4>
+					<pre><code>        module type EQ = sig
+            type t
+            val eq : t * t -> bool
+        end;;</code></pre>
+					<h4>Uma <em>type class</em> pode ser usada de maneira similar</h4>
+					<pre><code>        class EQ t where
+            eq :: (t, t) -> bool</code></pre>
+				</section>
+
+				<section>
+					<h2>M&oacute;dulos</h2>
+					<h4>OCaml</h4>
+					<pre><code>        module IntEQ : EQ with type t = int = struct
+            type t = int
+            let eq (x,y) = x == y
+        end;;</code></pre>
+					<h4>Haskell</h4>
+					<pre><code>        instance EQ Int where
+            eq (x, y) = x == y</code></pre>
+				</section>
+
+				<section>
+					<h2>M&oacute;dulos adicionais</h2>
+					<h4>OCaml</h4>
+					<pre><code>        module IntEQMod10 : EQ with type t = int = struct
+            type t = int
+            let eq (x,y) = (x mod 10) == (y mod 10)
+        end;;</code></pre>
+					<h4>Haskell</h4>
+					<pre><code>        newtype Mod10 = Mod10 Int
+        instance EQ Mod10 where
+            eq (Mod10 x,Mod10 y) = (x `mod` 10) == (y `mod` 10)</code></pre>
+				</section>
+
+				<section>
+					<h2>Functors</h2>
+					<h4>OCaml</h4>
+					<pre><code>  module PairEQ(X : EQ)(Y : EQ) : EQ with type t = X.t * Y.t = struct
+      type t = X.t * Y.t
+      let eq ((x1,y1),(x2,y2)) = X.eq (x1,x2) &amp;&amp; Y.eq (y1,y2)
+  end;;
+  module II = PairEQ(IntEQ)(IntEQ);;</code></pre>
+					<h4>Haskell</h4>
+					<pre><code>        instance (EQ a, EQ b) => EQ (a,b) where
+            eq ((x1,y1),(x2,y2)) = eq (x1,x2) &amp;&amp; eq (y1,y2)</code></pre>
+				</section>
+
+				<section>
+					<h2>More Functors</h2>
+					<h4>OCaml</h4>
+					<pre><code>module IntEQMod(N : sig val n : int end) : EQ with type t = int = struct
+    type t = int
+    let eq (x,y) = (x mod N.n) == (y mod N.n)
+end;;
+module IntEQMod13 = IntEQMod(struct let n = 13 end);;</code></pre>
+					<h4>Haskell</h4>
+					<pre><code>        -- left as an exercise for the reader</code></pre>
+				</section>
+
+				<section>
+					<h2>M&oacute;dulos de primeira classe</h2>
+					<h4>OCaml</h4>
+					<pre><code>let eqs = [(module IntEQMod(struct let n = 13 end) : EQ with type t = int)
+          ;(module IntEQMod(struct let n = 17 end))];;
+#   val eqs : (module EQ with type t = int) list = [&lt;module&gt;; &lt;module&gt;]
+    let f p m = let module M = (val m : EQ with type t = int)
+                 in M.eq p;;
+    List.map (f (0, 13)) eqs;;
+    - : bool list = [true; false]
+    List.map (f (0, 17)) eqs;;
+    - : bool list = [false; true]
+</code></pre>
+					<h4>Haskell</h4>
+					<pre><code>        -- left as an exercise for the reader</code></pre>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script type="text/javascript" src="lib/js/sh_main.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_haskell.min.js" > </script>
+		<script type="text/javascript" src="lib/js/sh_init.min.js" > </script>
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: false,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+//					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
